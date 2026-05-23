@@ -10,6 +10,8 @@
   <header class="topbar">
     <h1><a href="#/" class="brand">Bingo Cards</a></h1>
     <nav>
+      <button id="import-btn" class="btn btn-ghost" type="button">Import</button>
+      <input id="import-file" type="file" accept="application/json,.json" hidden />
       <a href="#/new" class="btn btn-primary">+ New Card</a>
     </nav>
   </header>
@@ -20,8 +22,11 @@
     <section class="home">
       <div class="empty" hidden>
         <h2>No cards yet</h2>
-        <p>Create your first bingo card to get started.</p>
-        <a href="#/new" class="btn btn-primary">+ New Card</a>
+        <p>Create your first bingo card, or import one a friend shared.</p>
+        <div class="empty-actions">
+          <a href="#/new" class="btn btn-primary">+ New Card</a>
+          <button class="btn btn-ghost btn-import" type="button">Import from file</button>
+        </div>
       </div>
       <ul class="card-list"></ul>
     </section>
@@ -34,6 +39,7 @@
         <span class="card-meta"></span>
       </a>
       <div class="card-actions">
+        <button class="btn btn-ghost btn-export" type="button">Export</button>
         <button class="btn btn-ghost btn-reset" type="button">Reset</button>
         <button class="btn btn-ghost btn-delete" type="button">Delete</button>
       </div>
@@ -44,6 +50,13 @@
     <section class="editor">
       <h2 id="editor-heading">New Bingo Card</h2>
       <form class="editor-form">
+        <label class="field">
+          <span>Load preset <small class="hint">— optional starting point, randomized on selection</small></span>
+          <select name="preset">
+            <option value="">— Choose a preset —</option>
+          </select>
+        </label>
+
         <label class="field">
           <span>Card title</span>
           <input name="title" type="text" required maxlength="80" placeholder="e.g. Weekend Chores" />
@@ -87,6 +100,7 @@
       <div class="play-header">
         <h2 class="play-title"></h2>
         <div class="play-actions">
+          <button class="btn btn-ghost btn-export" type="button">Export</button>
           <button class="btn btn-ghost btn-reset" type="button">Reset</button>
           <button class="btn btn-ghost btn-edit" type="button">Edit</button>
           <button class="btn btn-ghost btn-delete" type="button">Delete</button>
