@@ -26,6 +26,11 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 a {
@@ -41,7 +46,11 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 16px 24px;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
+  padding-top: max(16px, env(safe-area-inset-top));
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -52,6 +61,17 @@ a:hover {
 .topbar h1 {
   margin: 0;
   font-size: 20px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .brand {
@@ -68,6 +88,9 @@ main {
   max-width: 880px;
   margin: 0 auto;
   padding: 24px;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
 }
 
 /* Buttons */
@@ -166,11 +189,18 @@ main {
 }
 
 .card-link {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
   color: var(--text);
+}
+
+.card-link .card-title,
+.card-link .card-meta {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .card-link:hover {
@@ -289,7 +319,10 @@ main {
 
 .play-title {
   margin: 0;
-  word-break: break-word;
+  min-width: 0;
+  flex: 1 1 auto;
+  font-size: clamp(20px, 4.5vw, 28px);
+  overflow-wrap: anywhere;
 }
 
 .play-actions {
@@ -318,6 +351,8 @@ main {
   border-radius: 12px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 100%;
 }
 
 .bingo-cell {
@@ -326,17 +361,20 @@ main {
   justify-content: center;
   text-align: center;
   aspect-ratio: 1 / 1;
-  padding: 8px;
+  padding: 6px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.25;
+  font-size: clamp(10px, 2.1vw, 14px);
+  line-height: 1.2;
   cursor: pointer;
+  overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;
+  overflow: hidden;
+  min-width: 0;
   user-select: none;
-  font: inherit;
+  font-family: inherit;
   color: var(--text);
   transition: background 120ms ease, transform 80ms ease, border-color 120ms ease;
 }
@@ -397,16 +435,6 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* approximate eye positions on the 844 × 1125 photo, as % of the image */
-  --eye-size: 22px;
-  --eye-guy-l-x: 33%;
-  --eye-guy-l-y: 18.5%;
-  --eye-guy-r-x: 38%;
-  --eye-guy-r-y: 18.5%;
-  --eye-donkey-l-x: 13%;
-  --eye-donkey-l-y: 52%;
-  --eye-donkey-r-x: 25%;
-  --eye-donkey-r-y: 51%;
 }
 
 .bingo-bg-flash {
@@ -563,40 +591,6 @@ main {
   to   { transform: scale(1.18) rotate(3deg); filter: drop-shadow(0 0 24px red) hue-rotate(180deg); }
 }
 
-/* ---- glowing red eyes ------------------------------------------------ */
-
-.eye {
-  position: absolute;
-  width: var(--eye-size);
-  height: var(--eye-size);
-  border-radius: 50%;
-  background: radial-gradient(circle at center, #fff 0%, #ff2222 35%, #aa0000 70%, transparent 90%);
-  box-shadow:
-    0 0 12px 4px rgba(255, 0, 0, 0.95),
-    0 0 32px 14px rgba(255, 0, 0, 0.55),
-    0 0 60px 28px rgba(255, 0, 0, 0.25);
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  pointer-events: none;
-  animation: eyeGlow 0.8s ease-out 4.2s forwards, eyeFlicker 0.18s steps(2) 5s infinite;
-}
-
-.eye-guy-l    { left: var(--eye-guy-l-x);    top: var(--eye-guy-l-y); }
-.eye-guy-r    { left: var(--eye-guy-r-x);    top: var(--eye-guy-r-y); }
-.eye-donkey-l { left: var(--eye-donkey-l-x); top: var(--eye-donkey-l-y); }
-.eye-donkey-r { left: var(--eye-donkey-r-x); top: var(--eye-donkey-r-y); }
-
-@keyframes eyeGlow {
-  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.4); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes eyeFlicker {
-  from { filter: brightness(1); }
-  to   { filter: brightness(1.6); }
-}
-
 /* ---- marquee --------------------------------------------------------- */
 
 .bingo-marquee {
@@ -641,7 +635,6 @@ main {
   .bingo-photo-wrap,
   .bingo-text-you-got,
   .bingo-text-bingo,
-  .eye,
   .bingo-bg-flash {
     animation-duration: 0.001s !important;
     animation-iteration-count: 1 !important;
@@ -650,20 +643,83 @@ main {
 
 @media (max-width: 560px) {
   main {
-    padding: 16px;
+    padding: 14px;
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
   }
   .topbar {
-    padding: 12px 16px;
+    padding: 12px 14px;
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+  .topbar h1 {
+    font-size: 17px;
+  }
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .bingo-grid {
+    padding: 6px;
+    gap: 5px;
   }
   .bingo-cell {
-    font-size: 12px;
-    padding: 4px;
+    padding: 3px;
+    border-radius: 6px;
+  }
+  .play-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .play-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .play-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
   }
   .card-item {
     flex-direction: column;
     align-items: stretch;
   }
   .card-actions {
+    flex-wrap: wrap;
     justify-content: flex-end;
+  }
+  .editor {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  main {
+    padding: 10px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+  .topbar {
+    padding: 10px 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+  .topbar h1 {
+    font-size: 16px;
+  }
+  .btn {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+  .bingo-grid {
+    padding: 4px;
+    gap: 3px;
+  }
+  .bingo-cell {
+    padding: 2px;
+    font-size: 9px;
+    border-radius: 5px;
   }
 }
