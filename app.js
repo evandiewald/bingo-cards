@@ -308,6 +308,41 @@
     return card;
   }
 
+  // --- bingo!!! overlay --------------------------------------------------
+
+  let bingoOverlayEl = null;
+
+  function dismissBingoOverlay() {
+    if (!bingoOverlayEl) return;
+    const el = bingoOverlayEl;
+    bingoOverlayEl = null;
+    el.remove();
+    document.removeEventListener("keydown", onBingoKey);
+  }
+
+  function onBingoKey(e) {
+    if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      dismissBingoOverlay();
+    }
+  }
+
+  function playBingoAnimation() {
+    if (bingoOverlayEl) dismissBingoOverlay();
+    const frag = fromTemplate("tpl-bingo-overlay");
+    const overlay = frag.querySelector(".bingo-overlay");
+    const img = overlay.querySelector(".bingo-photo");
+    const wrap = overlay.querySelector(".bingo-photo-wrap");
+    img.addEventListener("error", () => {
+      img.remove();
+      wrap.classList.add("no-image");
+    });
+    overlay.querySelector(".bingo-skip").addEventListener("click", dismissBingoOverlay);
+    document.body.appendChild(frag);
+    bingoOverlayEl = overlay;
+    document.addEventListener("keydown", onBingoKey);
+  }
+
   async function importFromFile(file) {
     let text;
     try {
@@ -559,10 +594,14 @@
     grid.style.gridTemplateColumns = `repeat(${card.size}, 1fr)`;
 
     const freeSet = new Set(card.freeIndices || []);
+    let hadBingo = detectWins(card.marks, card.size).size > 0;
 
     function render() {
       clear(grid);
       const wins = detectWins(card.marks, card.size);
+      const winning = wins.size > 0;
+      if (winning && !hadBingo) playBingoAnimation();
+      hadBingo = winning;
       let markedCount = 0;
 
       for (let i = 0; i < card.cells.length; i++) {
@@ -623,6 +662,7 @@
   // --- routing -----------------------------------------------------------
 
   function route() {
+    dismissBingoOverlay();
     const hash = location.hash || "#/";
     const path = hash.replace(/^#/, "");
 
