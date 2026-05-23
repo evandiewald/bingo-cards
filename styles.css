@@ -384,6 +384,270 @@ main {
   border: 1px dashed var(--border);
 }
 
+/* ---------------------------------------------------------------------
+   BINGO!!! overlay — circa 1998
+   --------------------------------------------------------------------- */
+
+.bingo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: black;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* approximate eye positions on the 844 × 1125 photo, as % of the image */
+  --eye-size: 22px;
+  --eye-guy-l-x: 33%;
+  --eye-guy-l-y: 18.5%;
+  --eye-guy-r-x: 38%;
+  --eye-guy-r-y: 18.5%;
+  --eye-donkey-l-x: 13%;
+  --eye-donkey-l-y: 52%;
+  --eye-donkey-r-x: 25%;
+  --eye-donkey-r-y: 51%;
+}
+
+.bingo-bg-flash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, magenta, cyan, yellow, lime, magenta);
+  background-size: 400% 400%;
+  animation: bgRave 0.4s linear infinite;
+  mix-blend-mode: screen;
+  opacity: 0.35;
+}
+
+@keyframes bgRave {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+.bingo-photo-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.bingo-photo-wrap {
+  position: relative;
+  display: inline-block;
+  animation: zoomChaos 4s ease-in-out forwards, settleHold 0.01s linear 4s forwards;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.bingo-photo {
+  display: block;
+  max-height: 88vh;
+  max-width: 88vw;
+  height: auto;
+  width: auto;
+  border: 6px ridge gold;
+  box-shadow: 0 0 40px black;
+}
+
+.bingo-photo-wrap.no-image {
+  width: min(70vmin, 600px);
+  height: min(85vmin, 750px);
+  background:
+    repeating-linear-gradient(45deg, #d63384 0 24px, #ffd43b 24px 48px);
+  border: 6px ridge gold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 28px;
+  color: white;
+  text-shadow: 2px 2px 0 black;
+}
+
+.bingo-photo-wrap.no-image::after {
+  content: "(add assets/bingo-photo.jpg)";
+}
+
+@keyframes zoomChaos {
+  0%   { transform: scale(1) rotate(0deg) translate(0, 0); }
+  8%   { transform: scale(2.6) rotate(-4deg) translate(-2%, 1%); }
+  16%  { transform: scale(0.75) rotate(3deg); }
+  24%  { transform: scale(3.6) rotate(-6deg) translate(-3%, 4%); }
+  32%  { transform: scale(1.2) rotate(5deg); }
+  42%  { transform: scale(3.1) rotate(-3deg) translate(6%, -3%); }
+  50%  { transform: scale(0.85) rotate(4deg); }
+  58%  { transform: scale(4.2) rotate(-5deg) translate(-5%, -2%); }
+  66%  { transform: scale(1.4) rotate(2deg); }
+  74%  { transform: scale(3.4) rotate(-4deg) translate(4%, 5%); }
+  82%  { transform: scale(1.0) rotate(1deg); }
+  90%  { transform: scale(2.0) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0deg) translate(0, 0); }
+}
+
+@keyframes settleHold {
+  to { transform: scale(1) rotate(0); }
+}
+
+/* ---- text: YOU GOT... / BINGO!! -------------------------------------- */
+
+.bingo-text-stack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  pointer-events: none;
+  z-index: 5;
+  font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.bingo-text-you-got,
+.bingo-text-bingo {
+  background: linear-gradient(90deg, #ff0066, #ff9900, #ffee00, #00ff66, #00ccff, #cc00ff, #ff0066);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 3px black;
+  text-shadow: 0 6px 0 rgba(0,0,0,0.4);
+  animation: rainbowSlide 1.2s linear infinite;
+  opacity: 0;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 0, 0.9));
+}
+
+.bingo-text-you-got {
+  font-size: clamp(36px, 9vw, 110px);
+  animation:
+    rainbowSlide 1.2s linear infinite,
+    textFlyIn 1.2s cubic-bezier(.2,1.4,.4,1) 0s forwards,
+    textWobble 0.4s ease-in-out 1.2s infinite alternate;
+  transform: scale(0.1) rotate(-720deg);
+}
+
+.bingo-text-bingo {
+  font-size: clamp(60px, 16vw, 220px);
+  -webkit-text-stroke: 5px black;
+  animation:
+    rainbowSlide 0.6s linear infinite,
+    textFlyIn 0.9s cubic-bezier(.2,1.6,.4,1) 2s forwards,
+    bingoPulse 0.28s ease-in-out 3s infinite alternate;
+  transform: scale(0.1) rotate(720deg);
+}
+
+@keyframes rainbowSlide {
+  to { background-position: 400% 0; }
+}
+
+@keyframes textFlyIn {
+  0%   { opacity: 0; transform: scale(0.1) rotate(-720deg); }
+  60%  { opacity: 1; transform: scale(1.5) rotate(25deg); }
+  80%  { transform: scale(0.85) rotate(-15deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes textWobble {
+  from { transform: scale(1) rotate(-4deg); }
+  to   { transform: scale(1.08) rotate(4deg); }
+}
+
+@keyframes bingoPulse {
+  from { transform: scale(1) rotate(-3deg); filter: drop-shadow(0 0 12px yellow) hue-rotate(0); }
+  to   { transform: scale(1.18) rotate(3deg); filter: drop-shadow(0 0 24px red) hue-rotate(180deg); }
+}
+
+/* ---- glowing red eyes ------------------------------------------------ */
+
+.eye {
+  position: absolute;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #fff 0%, #ff2222 35%, #aa0000 70%, transparent 90%);
+  box-shadow:
+    0 0 12px 4px rgba(255, 0, 0, 0.95),
+    0 0 32px 14px rgba(255, 0, 0, 0.55),
+    0 0 60px 28px rgba(255, 0, 0, 0.25);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  animation: eyeGlow 0.8s ease-out 4.2s forwards, eyeFlicker 0.18s steps(2) 5s infinite;
+}
+
+.eye-guy-l    { left: var(--eye-guy-l-x);    top: var(--eye-guy-l-y); }
+.eye-guy-r    { left: var(--eye-guy-r-x);    top: var(--eye-guy-r-y); }
+.eye-donkey-l { left: var(--eye-donkey-l-x); top: var(--eye-donkey-l-y); }
+.eye-donkey-r { left: var(--eye-donkey-r-x); top: var(--eye-donkey-r-y); }
+
+@keyframes eyeGlow {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.4); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes eyeFlicker {
+  from { filter: brightness(1); }
+  to   { filter: brightness(1.6); }
+}
+
+/* ---- marquee --------------------------------------------------------- */
+
+.bingo-marquee {
+  position: absolute;
+  bottom: 8vh;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: clamp(20px, 3.2vw, 36px);
+  font-weight: 700;
+  color: #fffb00;
+  text-shadow: 2px 2px 0 #ff00ff, -2px -2px 0 #00ffff, 0 0 12px black;
+  background: repeating-linear-gradient(90deg, #000 0 12px, #111 12px 24px);
+  padding: 8px 0;
+  border-top: 4px ridge gold;
+  border-bottom: 4px ridge gold;
+}
+
+/* ---- skip button ----------------------------------------------------- */
+
+.bingo-skip {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  font-family: "Comic Sans MS", cursive;
+  font-size: 14px;
+  padding: 8px 14px;
+  background: white;
+  color: black;
+  border: 3px outset #ccc;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.bingo-skip:active {
+  border-style: inset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bingo-photo-wrap,
+  .bingo-text-you-got,
+  .bingo-text-bingo,
+  .eye,
+  .bingo-bg-flash {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 @media (max-width: 560px) {
   main {
     padding: 16px;

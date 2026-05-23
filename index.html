@@ -112,6 +112,29 @@
     </section>
   </template>
 
+  <template id="tpl-bingo-overlay">
+    <div class="bingo-overlay" role="dialog" aria-label="Bingo!">
+      <div class="bingo-bg-flash"></div>
+      <div class="bingo-photo-frame">
+        <div class="bingo-photo-wrap">
+          <img class="bingo-photo" src="assets/bingo-photo.jpg" alt="" />
+          <div class="eye eye-guy-l"></div>
+          <div class="eye eye-guy-r"></div>
+          <div class="eye eye-donkey-l"></div>
+          <div class="eye eye-donkey-r"></div>
+        </div>
+      </div>
+      <div class="bingo-text-stack">
+        <div class="bingo-text-you-got">YOU&nbsp;GOT...</div>
+        <div class="bingo-text-bingo">B&nbsp;I&nbsp;N&nbsp;G&nbsp;O&nbsp;!&nbsp;!</div>
+      </div>
+      <marquee class="bingo-marquee" behavior="alternate" scrollamount="35" direction="left">
+        ★彡 BINGO!!! 彡★ WINNER WINNER 彡★ B-I-N-G-O 彡★ ✧･ﾟCONGRATULATIONS!!!1!!!･ﾟ✧ 彡★
+      </marquee>
+      <button class="bingo-skip" type="button">Skip &raquo;</button>
+    </div>
+  </template>
+
   <template id="tpl-not-found">
     <section class="not-found">
       <h2>Card not found</h2>
