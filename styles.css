@@ -138,6 +138,13 @@ main {
   color: var(--text-muted);
 }
 
+.empty-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .card-list {
   list-style: none;
   padding: 0;

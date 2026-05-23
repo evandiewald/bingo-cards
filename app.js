@@ -230,6 +230,134 @@
     return tpl.content.cloneNode(true);
   }
 
+  function slugify(s) {
+    return (
+      s
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 40) || "bingo-card"
+    );
+  }
+
+  function downloadJson(filename, data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  function cardToDefinition(card) {
+    return {
+      type: "bingo-cards.card",
+      version: 1,
+      title: card.title,
+      size: card.size,
+      freeSpace: !!card.freeSpace,
+      shuffle: card.shuffle !== false,
+      items: card.items.slice(),
+    };
+  }
+
+  function exportCard(card) {
+    downloadJson(`${slugify(card.title)}.bingo.json`, cardToDefinition(card));
+  }
+
+  function normalizeImportedCard(obj) {
+    if (!obj || typeof obj !== "object") return null;
+    const title = typeof obj.title === "string" ? obj.title.trim() : "";
+    const size = parseInt(obj.size, 10);
+    const items = Array.isArray(obj.items)
+      ? obj.items.map((s) => String(s).trim()).filter(Boolean)
+      : [];
+    if (!title || ![3, 4, 5].includes(size) || items.length === 0) return null;
+    return {
+      title,
+      size,
+      freeSpace: obj.freeSpace !== false,
+      shuffle: obj.shuffle !== false,
+      items,
+    };
+  }
+
+  function createCardFromDefinition(def) {
+    const card = {
+      id: uid(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      title: def.title,
+      size: def.size,
+      freeSpace: def.freeSpace,
+      shuffle: def.shuffle,
+      items: def.items,
+    };
+    const grid = buildGrid(card);
+    card.cells = grid.cells.map((c) => c.text);
+    card.freeIndices = grid.cells
+      .map((c, i) => (c.free ? i : -1))
+      .filter((i) => i >= 0);
+    card.marks = new Array(card.size * card.size).fill(false);
+    for (const i of card.freeIndices) card.marks[i] = true;
+    return card;
+  }
+
+  async function importFromFile(file) {
+    let text;
+    try {
+      text = await file.text();
+    } catch {
+      alert("Couldn't read that file.");
+      return;
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      alert("That file isn't valid JSON.");
+      return;
+    }
+
+    let defs = [];
+    if (Array.isArray(parsed)) {
+      defs = parsed.map(normalizeImportedCard).filter(Boolean);
+    } else if (
+      parsed &&
+      parsed.type === "bingo-cards.export" &&
+      Array.isArray(parsed.cards)
+    ) {
+      defs = parsed.cards.map(normalizeImportedCard).filter(Boolean);
+    } else {
+      const single = normalizeImportedCard(parsed);
+      if (single) defs = [single];
+    }
+
+    if (defs.length === 0) {
+      alert(
+        "No valid bingo cards found in that file. Expected a card with a title, size (3/4/5), and items."
+      );
+      return;
+    }
+
+    const existing = loadCards();
+    const newCards = defs.map(createCardFromDefinition);
+    saveCards([...newCards, ...existing]);
+
+    if (newCards.length === 1) {
+      location.hash = `#/c/${newCards[0].id}`;
+    } else {
+      alert(`Imported ${newCards.length} cards.`);
+      if (location.hash === "#/" || location.hash === "") route();
+      else location.hash = "#/";
+    }
+  }
+
   function clear(el) {
     while (el.firstChild) el.removeChild(el.firstChild);
   }
@@ -246,6 +374,9 @@
 
     if (cards.length === 0) {
       empty.hidden = false;
+      empty
+        .querySelector(".btn-import")
+        .addEventListener("click", triggerImport);
       list.remove();
     } else {
       for (const card of cards) {
@@ -258,6 +389,11 @@
         const markedCount = (card.marks || []).filter(Boolean).length;
         const total = card.size * card.size;
         meta.textContent = `${card.size} × ${card.size} · ${markedCount} / ${total} marked`;
+
+        item.querySelector(".btn-export").addEventListener("click", () => {
+          const fresh = getCard(card.id);
+          if (fresh) exportCard(fresh);
+        });
 
         item.querySelector(".btn-reset").addEventListener("click", () => {
           const fresh = getCard(card.id);
@@ -458,6 +594,10 @@
 
     render();
 
+    section.querySelector(".btn-export").addEventListener("click", () => {
+      exportCard(card);
+    });
+
     section.querySelector(".btn-reset").addEventListener("click", () => {
       if (!confirm("Clear all marks on this card?")) return;
       card.marks = new Array(card.size * card.size).fill(false);
@@ -513,6 +653,29 @@
     renderHome();
   }
 
+  // --- topbar: import ----------------------------------------------------
+
+  function triggerImport() {
+    const input = document.getElementById("import-file");
+    if (input) input.click();
+  }
+
+  function setupTopbar() {
+    const btn = document.getElementById("import-btn");
+    const input = document.getElementById("import-file");
+    if (btn && input) {
+      btn.addEventListener("click", triggerImport);
+      input.addEventListener("change", () => {
+        const file = input.files && input.files[0];
+        input.value = "";
+        if (file) importFromFile(file);
+      });
+    }
+  }
+
   window.addEventListener("hashchange", route);
-  window.addEventListener("DOMContentLoaded", route);
+  window.addEventListener("DOMContentLoaded", () => {
+    setupTopbar();
+    route();
+  });
 })();
