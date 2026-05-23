@@ -45,6 +45,13 @@
       <h2 id="editor-heading">New Bingo Card</h2>
       <form class="editor-form">
         <label class="field">
+          <span>Load preset <small class="hint">— optional starting point, randomized on selection</small></span>
+          <select name="preset">
+            <option value="">— Choose a preset —</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span>Card title</span>
           <input name="title" type="text" required maxlength="80" placeholder="e.g. Weekend Chores" />
         </label>
