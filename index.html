@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bingo Cards</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1><a href="#/" class="brand">Bingo Cards</a></h1>
+    <nav>
+      <a href="#/new" class="btn btn-primary">+ New Card</a>
+    </nav>
+  </header>
+
+  <main id="app"></main>
+
+  <template id="tpl-home">
+    <section class="home">
+      <div class="empty" hidden>
+        <h2>No cards yet</h2>
+        <p>Create your first bingo card to get started.</p>
+        <a href="#/new" class="btn btn-primary">+ New Card</a>
+      </div>
+      <ul class="card-list"></ul>
+    </section>
+  </template>
+
+  <template id="tpl-card-item">
+    <li class="card-item">
+      <a class="card-link" href="#">
+        <span class="card-title"></span>
+        <span class="card-meta"></span>
+      </a>
+      <div class="card-actions">
+        <button class="btn btn-ghost btn-reset" type="button">Reset</button>
+        <button class="btn btn-ghost btn-delete" type="button">Delete</button>
+      </div>
+    </li>
+  </template>
+
+  <template id="tpl-new">
+    <section class="editor">
+      <h2 id="editor-heading">New Bingo Card</h2>
+      <form class="editor-form">
+        <label class="field">
+          <span>Card title</span>
+          <input name="title" type="text" required maxlength="80" placeholder="e.g. Weekend Chores" />
+        </label>
+
+        <label class="field">
+          <span>Size</span>
+          <select name="size">
+            <option value="3">3 × 3</option>
+            <option value="4">4 × 4</option>
+            <option value="5" selected>5 × 5</option>
+          </select>
+        </label>
+
+        <label class="field field-check">
+          <input name="freeSpace" type="checkbox" checked />
+          <span>Free space in the center (odd sizes only)</span>
+        </label>
+
+        <label class="field field-check">
+          <input name="shuffle" type="checkbox" checked />
+          <span>Shuffle items into the grid</span>
+        </label>
+
+        <label class="field">
+          <span>Items <small class="hint">— one per line</small></span>
+          <textarea name="items" rows="10" required placeholder="Take out the trash&#10;Do the dishes&#10;Walk the dog&#10;..."></textarea>
+          <small class="hint count-hint"></small>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save card</button>
+          <a href="#/" class="btn btn-ghost">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </template>
+
+  <template id="tpl-play">
+    <section class="play">
+      <div class="play-header">
+        <h2 class="play-title"></h2>
+        <div class="play-actions">
+          <button class="btn btn-ghost btn-reset" type="button">Reset</button>
+          <button class="btn btn-ghost btn-edit" type="button">Edit</button>
+          <button class="btn btn-ghost btn-delete" type="button">Delete</button>
+        </div>
+      </div>
+      <div class="bingo-banner" hidden>BINGO!</div>
+      <div class="bingo-grid"></div>
+      <p class="play-progress"></p>
+    </section>
+  </template>
+
+  <template id="tpl-not-found">
+    <section class="not-found">
+      <h2>Card not found</h2>
+      <p>That card doesn't exist or was deleted.</p>
+      <a href="#/" class="btn btn-primary">Back to cards</a>
+    </section>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
